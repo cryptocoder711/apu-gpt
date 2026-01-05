@@ -63,3 +63,11 @@ async function send() {
 
   messages.push({ role: "assistant", content: fullText });
 }
+
+// ✅ Press ENTER to send message
+document.getElementById("input").addEventListener("keydown", function (e) {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    send();
+  }
+});
