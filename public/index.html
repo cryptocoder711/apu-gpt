@@ -1,17 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Kwik Chat</title>
+  <meta charset="UTF-8" />
+  <title>Kwik-Chat</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="chat-container">
-    <div id="chat"></div>
-    <div class="input-bar">
-      <input id="input" placeholder="Ask me anything..." />
-      <button onclick="send()">Send</button>
-    </div>
-  </div>
+
+  <header>
+    <h1>Kwik-Chat 🛒</h1>
+    <p>Ask me anything about Springfield… or crypto</p>
+  </header>
+
+  <main class="layout">
+    <aside class="character-panel">
+      <img src="apu.png" alt="Convenience Store Owner" />
+      <div class="speech">
+        “Thank you, come again… after buying the dip!”
+      </div>
+    </aside>
+
+    <section class="chat-container">
+      <div id="chat"></div>
+    </section>
+  </main>
+
+  <footer class="input-bar">
+    <input id="input" placeholder="Ask Apu something..." />
+    <button onclick="send()">Send</button>
+  </footer>
+
   <script src="app.js"></script>
 </body>
 </html>
