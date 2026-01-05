@@ -6,10 +6,9 @@ async function send() {
 
   const text = input.value.trim();
   if (!text) return;
-
   input.value = "";
 
-  // User message
+  // Show user message
   messages.push({ role: "user", content: text });
   chat.innerHTML += `<div class="message user"><strong>You:</strong> ${text}</div>`;
 
@@ -18,7 +17,6 @@ async function send() {
   botDiv.className = "message bot";
   botDiv.innerHTML = `<strong>Kwik Owner:</strong> `;
   chat.appendChild(botDiv);
-
   chat.scrollTop = chat.scrollHeight;
 
   const response = await fetch("/chat", {
@@ -29,16 +27,38 @@ async function send() {
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
+  let buffer = "";
   let fullText = "";
 
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
 
-    const chunk = decoder.decode(value);
-    fullText += chunk;
-    botDiv.innerHTML = `<strong>Kwik Owner:</strong> ${fullText}`;
-    chat.scrollTop = chat.scrollHeight;
+    buffer += decoder.decode(value, { stream: true });
+
+    // Split SSE chunks
+    const lines = buffer.split("\n");
+    buffer = lines.pop(); // keep incomplete line
+
+    for (const line of lines) {
+      if (!line.startsWith("data:")) continue;
+
+      const data = line.replace("data:", "").trim();
+
+      if (data === "[DONE]") continue;
+
+      try {
+        const json = JSON.parse(data);
+        const delta = json.choices?.[0]?.delta?.content;
+        if (delta) {
+          fullText += delta;
+          botDiv.innerHTML = `<strong>Kwik Owner:</strong> ${fullText}`;
+          chat.scrollTop = chat.scrollHeight;
+        }
+      } catch (err) {
+        // Ignore malformed chunks
+      }
+    }
   }
 
   messages.push({ role: "assistant", content: fullText });
